@@ -67,8 +67,9 @@ pygame.display.update()
 
 import pygame
 import pyperclip
+from .base_view import BaseView
 
-class TextArea:
+class TextArea(BaseView):
     class BG:
         def __init__(self, win, pos):
             self.pos = pos
