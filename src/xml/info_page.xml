@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<offset>
+    <default font="Lucida Console" bgColor="[120]*3"/>
+    <vector x="100" y="10" margin="10">
+
+        <!-- Кнопки -->
+        <vector y="50" margin="5" dir="v">
+            <button id="gens" text="общее" padding="[59, 1]"/>
+            <button id="coms" text="команды" padding="[48.5, 1]"/>
+            <button id="args" text="аргументы слоя" padding="[10, 1]"/>
+            <button id="lays" text="слои" padding="[65, 1]"/>
+        </vector>
+
+        <!-- Текст -->
+        <vector y="20" dir="v" margin="3">
+            <text text="Справка" color="[250]*3"/>
+            <input id="i_info"
+                pos="[0,0,450,372]"
+                bg="[50]*3"
+                size="16"
+                color="[250]*3"
+                selectionColor="(80,80,150)"
+                padding="5"
+                scrollBarWidth="3"
+                scrollBarColor="([90]*3)"
+                scrollBarBg="([50]*3)"
+                />
+
+            <button id="back" text="назад" coords="(0,5)" padding="[10, 2]" bgColor="[80]*3"/>
+
+        </vector>
+
+    </vector>
+
+</offset>

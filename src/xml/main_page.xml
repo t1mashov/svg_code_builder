@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<offset>
+    <win bg="[40]*3"/>
+    <default font="Lucida Console"/>
+
+    <frozen>
+        <!-- оконтовка текущей функции -->
+        <rect pos="[190, 30, 30, 30]"
+            color="[200]*3"
+            stroke="2"/>
+
+        <!-- оконтовка Pathes -->
+        <rect pos="[5, 195, 210, 300]" 
+            color="[80]*3"
+            stroke="1"/>
+
+        <!-- оконтовка ?dx;?dy -->
+        <rect pos="[225, 370, 300, 80]" 
+            color="[80]*3"
+            stroke="1"/>
+    </frozen>
+
+    <!-- делит приложение на 3 части -->
+    <vector margin="1">
+
+        <!-- Команды, слои -->
+        <vector x="10" y="35" dir="v" margin="5">
+            <!-- Current command -->
+            <vector margin="7">
+                <text text="Текущая команда:" font="Lucida Console" color="[200]*3"/>
+                <text id="t_cur_command" 
+                    text=" " font="Lucida Console" color="[200]*3"/>
+            </vector>
+
+            <!-- Команды -->
+            <!-- M, L, Z -->
+            <default 
+                font="Lucida Console"
+                bgColor="[150]*3"
+                hoverColor="[200]*3"
+                padding="[10, 5]"/>
+                
+            <vector y="5" margin="5">
+                <button id="com_M" text="M"/>
+                <button id="com_L" text="L"/>
+                <button id="com_Z" text="Z"/>
+            </vector>
+
+            <!-- C, S, Q, T -->
+            <vector y="5" margin="5">
+                <button id="com_C" text="C"/>
+                <button id="com_S" text="S"/>
+                <button id="com_Q" text="Q"/>
+                <button id="com_T" text="T"/>
+            </vector>
+
+            <!-- A -->
+            <button id="com_A" coords="[0,5]" text="A"/>
+            
+            <vector y="5" dir="v" margin="2">
+                <text coords="(0, 22)" text="Слои:" color="[200]*3"/>
+                
+                <input id="i_pathes"
+                    pos="[0,0,200,100]"
+                    bg="[50]*3"
+                    size="16"
+                    color="[250]*3"
+                    selectionColor="(80,80,150)"
+                    padding="1"/>
+
+                <!-- Add path -->
+                <default bgColor="[80]*3" font="Lucida Console"/>
+                <vector y="1" margin="2">
+                    <input id="i_path_name" 
+                        pos="[0,0,95,20]"
+                        size="16"
+                        bg="[120]*3"
+                        padding="1"/>
+                    <button id="add_path"
+                        text="добавить"
+                        padding="[6,1]"/>
+                </vector>
+
+                <vector y="5" margin="5" dir="v">
+                    <vector y="5" margin="2">
+                        <button id="path_up" padding="[9,1.5]" text="слой /\"/>
+                        <button id="move_up" padding="[6,1.5]" text="сдвиг /\"/>
+                    </vector>
+
+                    <vector margin="2">
+                        <button id="path_down" padding="[9,1.5]" text="слой \/"/>
+                        <button id="move_down" padding="[6,1.5]" text="сдвиг \/"/>
+                    </vector>
+                </vector>
+
+
+                <button id="delete" coords="(0,55)" padding="[9,1.5]" text="удалить слой"/>
+            </vector>
+        </vector>
+
+
+        <!-- Canvas, grid, move all, save -->
+        <default font="Lucida Console" color="[250]*3" bgColor="[80]*3" cursorColor="[255]*3"/>
+        <vector margin="5" dir="v">
+
+            <vector y="10" margin="1" dir="v">
+                <text id="t_cell_size" text=""/>
+                <!-- SVGCanvas -->
+                <SVGCanvas id="canvas" 
+                    pos="[0,0,300,300]"
+                    gridColor="[150]*3" 
+                    bg="[100]*3"/>
+            </vector>
+
+            <vector margin="5">
+                <!-- Grid -->
+                <text text="Сетка:"/>
+                <input id="i_grid" 
+                    pos="[-2,-1,50,20]" 
+                    size="16"
+                    cursorColor="[0]*3"
+                    color="[0]*3"
+                    bg="[120]*3"
+                    padding="1"/>
+                <button id="grid_apply" text="применить" coords="(0,-1)" padding="[5,1.5]"/>
+            </vector>
+
+            <vector x="5" y="10" dir="v" margin="1">
+                <text coords="(2,2)"
+                    size="15"
+                    text="Изменить все точки на слое"/>
+                <!-- Move all -->
+                <vector y="5" margin="2">
+                    <text text="?dx;?dy=" size="14"/>
+                    <input id="i_move_all" 
+                        pos="[0,0,105,20]" 
+                        bg="[50]*3" 
+                        padding="1"
+                        size="16"/>
+                    <button id="move_all" text="применить" coords="(0,0)" padding="[5,1]"/>
+                </vector>
+
+                <vector y="5" margin="3">
+                    <text text="Размер svg (300x300):" size="15" coords="(0,2)"/>
+                    <input id="i_img_size"
+                        padding="1"
+                        size="16"
+                        bg="[50]*3"
+                        pos="[0,0,90,20]"/>
+                </vector>
+            </vector>
+
+            <vector y="20" margin="5">
+                <button id="save" text="сохранить" padding="[5,1]"/>
+                <button id="info" text="справка" padding="[5,1]"/>
+            </vector>
+
+        </vector>
+    
+        <!-- Поля для кода -->
+        <vector x="10" y="10" dir="v" margin="1">
+            <!-- Path args -->
+            <text text="Аргументы слоя:"/>
+            <input id="i_path_args" 
+                pos="[0,0,300,120]"
+                bg="[50]*3"
+                size="15"
+                font="Courier"
+                selectionColor="[80]*3"
+                padding="2"/>
+
+            <!-- D args -->
+            <text text="Коды d:" coords="(0,15)"/>
+            <input id="i_d_args" 
+                pos="[0,0,300,235]"
+                bg="[50]*3"
+                size="15"
+                font="Courier"
+                selectionColor="[80]*3"
+                padding="2"/>
+
+            <vector y="10" dir="v" margin="5">
+                <button id="com_up" text="команда /\" padding="[5, 2]"/>
+                <button id="com_down" text="команда \/" padding="[5, 2]"/>
+            </vector>
+        </vector>
+
+    </vector>
+
+</offset>
