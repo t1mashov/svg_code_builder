@@ -4,7 +4,6 @@ import pygame
 from .text import Text
 from .view import MouseSensView
 import copy
-
 from .base_view import BaseView
 
 '''
@@ -32,6 +31,7 @@ class Table(MouseSensView, BaseView):
 
         self.dx = 0
         self.dy = 0
+        self.old_d = [self.dx, self.dy]
         self.speed = 10
         self.shift = False # зажата ли клавиша SHIFT
 
@@ -166,16 +166,23 @@ class Table(MouseSensView, BaseView):
                     self.dx -= self.speed
                 else: self.dy -= self.speed
             
+            mouseCatched = True
+
             if click != None:
 
                 [w, h] = self.size
                 [tw, th] = self.pos[2::]
 
-                if self.dx+w < tw: self.dx = tw-w; mouseCatched = True
-                if self.dy+h < th: self.dy = th-h; mouseCatched = True
+                if self.dx+w < tw: self.dx = tw-w
+                if self.dy+h < th:  self.dy = th-h
+                if self.dx > 0:  self.dx = 0
+                if self.dy > 0:  self.dy = 0
 
-                if self.dx > 0: self.dx = 0; mouseCatched = True
-                if self.dy > 0: self.dy = 0; mouseCatched = True
+                if self.old_d == [self.dx, self.dy]:
+                    mouseCatched = False
+
+                self.old_d = [self.dx, self.dy]
+
                 self.render()
 
         return mouseCatched
