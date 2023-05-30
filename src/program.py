@@ -14,6 +14,7 @@ class Program(App):
     '''Главный класс приложения'''
     def __init__(self):
         super().__init__()
+        # self.WIN_SIZE = (850,500)
         self.WIN_SIZE = (850,500)
         self.DESIGN = "src/xml/main_page.xml"
         self.XML_VIES = {

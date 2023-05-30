@@ -2,18 +2,9 @@
 xmlns="http://www.w3.org/2000/svg" 
     width="300" 
     height="300" 
-    viewBox="45.0 60.0 150.0 150.0" 
+    viewBox="0.0 0.0 300.0 300.0" 
     style="">
 <rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none" stroke="none"/>
-<path fill="#fff" d="M 105,90
-A 50 50 0 1 0 135,90
-L 135,110
-A 32 32 0 1 1 105,110
-L 105,90
-M 110,80
-A 1 1 0 0 1 130,80
-L 130,150
-A 1 1 0 0 1 110,150
-Z 
+<path  d="M 45,45
 "/>
 </svg>

@@ -129,8 +129,8 @@ class TextArea(BaseView):
                 if self.ct < 30:
                     pygame.draw.rect(self.win, self.color, 
                         [
-                            self.x*csw + pos[0] - ox*csw, 
-                            self.y*csh + pos[1] - oy*csh, 
+                            self.x*csw + pos[0] - ox*csw + self.ta.d, 
+                            self.y*csh + pos[1] - oy*csh + self.ta.d, 
                             2, csh]
                     )
         def set_coords(self, x=None, y=None):
@@ -332,7 +332,7 @@ class TextArea(BaseView):
             for y, [s, e] in rngs.items():
                 [x1, y1] = self.abs_pos([s, y])
                 [x2, _] = self.abs_pos([e, y])
-                rectes.append([x1, y1, x2-x1+cs[0], cs[1]])
+                rectes.append([x1 + self.ta.d, y1 + self.ta.d, x2-x1+cs[0], cs[1]])
             for rct in rectes:
                 pygame.draw.rect(self.win, self.color, rct)
         
@@ -422,6 +422,7 @@ class TextArea(BaseView):
             [X, Y, W, H] = self.ta.pos
             x = X + W - self.width
             v_len = len(self.ta.visible_text) # кол-во видимых линий
+            v_len = v_len if v_len>0 else 1
             lines_len = len(self.ta.lines) # кол-во всех линий
             height = H * (v_len / lines_len) # высота ползунка
             

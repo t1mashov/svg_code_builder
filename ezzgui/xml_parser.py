@@ -202,7 +202,6 @@ class Parser:
     def get_design(self, win) -> dict:
 
         for view in self.XML_VIEWS.values():
-            print(view.__bases__)
             if not BaseView in view.__bases__:
                 raise Exception(f'{view} должен наследоваться от BaseView (ezzgui.views.base_view.BaseView)')
 

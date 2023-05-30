@@ -60,7 +60,7 @@ class SVGCodeBuilder:
             {
                 'name':'Main', 'args':'',
                 'd' : [
-                    {'func':'M', 'lines':[{'arg':'', 'points':[(150,150)]}]}
+                    {'func':'M', 'lines':[]}
                 ]
             }
         ]
@@ -386,7 +386,7 @@ xmlns="http://www.w3.org/2000/svg"
                 'name': name, 
                 'args': '',
                 'd' : [
-                    {'func':'M', 'lines':[{'arg':'', 'points':[(150,150)]}]}
+                    {'func':'M', 'lines':[]}
                 ]
             })
             self.current['func'] = 0
@@ -414,7 +414,9 @@ xmlns="http://www.w3.org/2000/svg"
                 self.path_controllers('path \\/')
         
         self.d.set_content(self.collect_d())
+        self.d.offset[1] = 0
         self.path.set_content(self.collect_path())
+        self.path.offset[1] = 0
         self.cnv.points = self.collect_points()
         self.update_by_canvas()
 

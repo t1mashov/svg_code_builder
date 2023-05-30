@@ -14,10 +14,6 @@
             color="[80]*3"
             stroke="1"/>
 
-        <!-- оконтовка ?dx;?dy -->
-        <rect pos="[225, 370, 300, 80]" 
-            color="[80]*3"
-            stroke="1"/>
     </frozen>
 
     <!-- делит приложение на 3 части -->
@@ -29,7 +25,7 @@
             <vector margin="7">
                 <text text="Текущая команда:" font="Lucida Console" color="[200]*3"/>
                 <text id="t_cur_command" 
-                    text=" " font="Lucida Console" color="[200]*3"/>
+                    text="M" font="Lucida Console" color="[200]*3"/>
             </vector>
 
             <!-- Команды -->
@@ -126,6 +122,12 @@
             </vector>
 
             <vector x="5" y="10" dir="v" margin="1">
+                <frozen>
+                    <!-- оконтовка ?dx;?dy -->
+                     <rect pos="[-5, -5, 300, 80]" 
+                        color="[80]*3"
+                        stroke="1"/>
+                </frozen>
                 <text coords="(2,2)"
                     size="15"
                     text="Изменить все точки на слое"/>
@@ -150,8 +152,10 @@
                 </vector>
             </vector>
 
-            <vector y="20" margin="5">
+            <vector y="20" margin="3">
                 <button id="save" text="сохранить" padding="[5,1]"/>
+                <!-- TODO Открытие файла -->
+                <!-- <button id="open" text="открыть" padding="[5,1]"/> -->
                 <button id="info" text="справка" padding="[5,1]"/>
             </vector>
 
@@ -167,6 +171,9 @@
                 size="15"
                 font="Courier"
                 selectionColor="[80]*3"
+                scrollBarWidth="3"
+                scrollBarColor="([90]*3)"
+                scrollBarBg="([50]*3)"
                 padding="2"/>
 
             <!-- D args -->
@@ -176,6 +183,9 @@
                 bg="[50]*3"
                 size="15"
                 font="Courier"
+                scrollBarWidth="3"
+                scrollBarColor="([90]*3)"
+                scrollBarBg="([50]*3)"
                 selectionColor="[80]*3"
                 padding="2"/>
 
