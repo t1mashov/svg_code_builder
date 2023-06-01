@@ -15,12 +15,17 @@ from .base_view import BaseView
     />
 '''
 class Table(MouseSensView, BaseView):
-    def __init__(self, win, pos, bg='(255,255,255)', padding='[5, 2]', size="16", **kwargs):
+    def __init__(self, win, pos, bg='(255,255,255)',
+                 color="(0,0,0)",
+                 scrollCatcher="False",
+                 padding='[5, 2]', size="16", **kwargs):
         super().__init__(win, pos)
         self.win = win
         self.pos = pos
+        self.color = color
         self.bg = eval(bg)
         self.padding = eval(padding)
+        self.scrollCatcher = scrollCatcher
 
         self.content = {} # {1 : {'id':1, 'prod':'Утюг'}, ...}
         self.headers = {} # {'id':'ID', 'prod':"Product", ...}
@@ -38,7 +43,7 @@ class Table(MouseSensView, BaseView):
         # поверхность отрисовки
         self.surf = pygame.Surface(pos[2::])
         self.surf.fill(self.bg)
-        self.text = Text(font='Lucida Console', size=eval(size))
+        self.text = Text(font='Lucida Console', size=eval(size), color=self.color)
 
         self.rowID = 1 # авто-индекс строк
         self.rowHeight = self.text.font.size(' ')[1] + self.padding[0]
@@ -125,18 +130,18 @@ class Table(MouseSensView, BaseView):
             [self.surf.blit(row[k], (dx + ox+padX, dy + i * (self.rowHeight + padY*2) + padY*2)) 
              for (i, (_, row)) in enumerate(self.render_table.items())]
             
-            pygame.draw.rect(self.surf, (0,0,0), # вертикальные линии
+            pygame.draw.rect(self.surf, self.color, # вертикальные линии
                 [dx + ox, dy, 1, H]
             )
 
             ox += self.widths[k] + padX*2
 
         for i in range(len(self.content)+1):
-            pygame.draw.rect(self.surf, (0,0,0), # горизонтальные линии
+            pygame.draw.rect(self.surf, self.color, # горизонтальные линии
                 [dx, dy + i*(self.rowHeight + padY*2), W, 1]
             )
 
-        pygame.draw.rect(self.surf, (0,0,0), [dx, dy, W, H], 1) # рамка
+        pygame.draw.rect(self.surf, self.color, [dx, dy, W, H], 1) # рамка
         
 
 
@@ -180,6 +185,9 @@ class Table(MouseSensView, BaseView):
 
                 if self.old_d == [self.dx, self.dy]:
                     mouseCatched = False
+
+                if self.scrollCatcher:
+                    mouseCatched = True
 
                 self.old_d = [self.dx, self.dy]
 

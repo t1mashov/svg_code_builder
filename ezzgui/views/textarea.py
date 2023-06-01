@@ -417,8 +417,62 @@ class TextArea(BaseView):
             self.width = width
             self.color = color
             self.bg = bg
+            self.pressed = False
+            self.saved_coords = (0, 0)
+            self.saved_offset = [0, 0]
 
-        def spawn(self):
+        def on_focus(self, mpos):
+            [mx, my] = mpos
+            [X, Y, W, H] = self.ta.pos
+            x = X + W - self.width
+            w = self.width
+            # print(mpos, [x, Y, w, H])
+            if x <= mx <= x+w and Y <= my < Y+H:
+                return True
+            return False
+
+        def detect_mouse_pressed(self, events, mpos, mpress):
+            if self.on_focus(mpos):
+                for e in events:
+                    if e.type == pygame.MOUSEBUTTONDOWN:
+                        self.pressed = True
+                        self.saved_coords = mpos
+                        self.saved_offset = self.ta.offset[:]
+            if not mpress[0]:
+                self.pressed = False
+
+
+        def move_ta_offset_by_scrollbar(self, mpos):
+            [_, my] = mpos
+            [_, Y, _, H] = self.ta.pos
+            
+            if my < Y: my = Y
+            if my > Y+H: my = Y+H
+
+            if not self.pressed: return
+
+            v_len = len(self.ta.visible_text) # кол-во видимых линий
+            v_len = v_len if v_len>0 else 1
+            lines_len = len(self.ta.lines) # кол-во всех линий
+            height = H * (v_len / lines_len)
+            try:
+                sdy = (H - height) / (lines_len - v_len) # смещение по Y
+            except:
+                sdy = 0
+            
+            yn = int((my - self.saved_coords[1]) // sdy) if sdy != 0 else 0
+            self.ta.offset[1] = self.saved_offset[1] + yn
+            
+            if self.ta.offset[1] < 0: self.ta.offset[1] = 0
+            if self.ta.offset[1] > lines_len - v_len: self.ta.offset[1] = lines_len - v_len
+
+            self.ta.render()
+            ...
+            
+
+        def spawn(self, events, mpos, mpress):
+            self.detect_mouse_pressed(events, mpos, mpress)
+            self.move_ta_offset_by_scrollbar(mpos)
             [X, Y, W, H] = self.ta.pos
             x = X + W - self.width
             v_len = len(self.ta.visible_text) # кол-во видимых линий
@@ -534,12 +588,13 @@ class TextArea(BaseView):
 
     def detect_focus(self, pos, events, scroll=False):
         on_mouse_focus = False
+        sw = self.scrollBar.width
         click = False
         for e in events:
             if e.type == pygame.MOUSEBUTTONDOWN:
                 if e.button in [1, 3]: click = True
         if not self.onfocus:
-            if (self.pos[0] < pos[0] < self.pos[0]+self.pos[2] and
+            if (self.pos[0] < pos[0] - sw < self.pos[0]+self.pos[2] and
                 self.pos[1] < pos[1] < self.pos[1]+self.pos[3]):
                 on_mouse_focus = True
                 if click:
@@ -549,7 +604,7 @@ class TextArea(BaseView):
                         if self.on_enable:
                             self.on_enable[0](*self.on_enable[1])
         else:
-            if (pos[0] < self.pos[0] or pos[0] > self.pos[0]+self.pos[2] or
+            if (pos[0] < self.pos[0] or pos[0] > self.pos[0]+self.pos[2]-sw or
                 pos[1] < self.pos[1] or pos[1] > self.pos[1]+self.pos[3]):
                 if click:
                     self.onfocus = False
@@ -620,7 +675,7 @@ class TextArea(BaseView):
         
         self.selection.spawn(mpos, mpress, events)
         self.draw_text()
-        self.scrollBar.spawn()
+        self.scrollBar.spawn(events, mpos, mpress)
 
         if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
             self.shift = True
@@ -672,7 +727,6 @@ class TextArea(BaseView):
                     if e.key == 8: #backspace
                         if cx == 0:
                             if 0 < cy < len(self.lines):
-                                #print('<spawn backspace> new[x,y]=', [len(self.lines[cy-1]), cy-1])
                                 self.cursor.set_coords(len(self.lines[cy-1]), cy-1)
                                 self.lines[cy-1] += self.lines[cy]
                                 del self.lines[cy]
