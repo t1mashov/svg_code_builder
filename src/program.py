@@ -3,22 +3,25 @@ from ezzgui.app import App
 from ezzgui.imports import *
 
 from tkinter import Tk
-from tkinter.filedialog import asksaveasfilename
+from tkinter.filedialog import asksaveasfilename, askopenfilename
 
 from .logic.canvas import SVGCanvas
 from .logic.svgcodebuilder import SVGCodeBuilder
 
 from .info import InfoPage
+from .nice_button import NiceButton
+
+import json
 
 class Program(App):
     '''Главный класс приложения'''
     def __init__(self):
         super().__init__()
-        # self.WIN_SIZE = (850,500)
-        self.WIN_SIZE = (850,500)
+        self.WIN_SIZE = (850,550)
         self.DESIGN = "src/xml/main_page.xml"
         self.XML_VIES = {
-            'SVGCanvas' : SVGCanvas
+            'SVGCanvas' : SVGCanvas,
+            'NiceButton' : NiceButton
         }
 
         # связи кнопок и их функций
@@ -40,7 +43,11 @@ class Program(App):
             'delete' : [self.path_control, ('delete',)],
             'grid_apply' : [self.grid_apply, ()],
             'move_all' : [self.moveall, ()],
+
             'save' : [self.save, ()],
+            'save_json' : [self.save_json, ()],
+            'open' : [self.open_json, ()],
+
             'com_up' : [self.command_up_down, ("command /\\",)],
             'com_down' : [self.command_up_down, ("command \\/",)],
 
@@ -175,5 +182,59 @@ class Program(App):
             self.VIEWS['i_grid'].set_content('')
         
         self.set_cell_size()
+
+
+    def save_json(self):
+        root = Tk()
+        root.withdraw()
+        file_path = asksaveasfilename(
+            initialfile='result.json',
+            filetypes=(('SVG files', '*.json'), ('All files', '*.*'))
+        )
+        if not '.json' in file_path:
+            file_path += '.json'
+        if file_path.strip() == '.json': return
+        
+        data = self.code_builder.container
+
+        print(file_path)
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f)
+        root.destroy()
+
+
+    def open_json(self):
+        root = Tk()
+        root.withdraw()
+        file_path = askopenfilename()
+        if not '.json' in file_path:
+            file_path += '.json'
+        if file_path.strip() == '.json': return
+
+        with open(file_path, encoding='utf-8') as f:
+            data = json.load(f)
+
+            self.code_builder.container = data
+
+            self.code_builder.d.set_content(self.code_builder.collect_d())
+            self.code_builder.d.offset[1] = 0
+            self.code_builder.path.set_content(self.code_builder.collect_path())
+            self.code_builder.path.offset[1] = 0
+            self.code_builder.cnv.points = self.code_builder.collect_points()
+            self.code_builder.update_by_canvas()
+
+            c = self.code_builder.current
+            path_names = [path['name'] for path in self.code_builder.container]
+            self.VIEWS['i_pathes'].set_content('\n'.join(path_names))
+            
+            [(x1, y1), (x2, y2)] = self.VIEWS['i_pathes'].selection.poses
+            y1 = c['path']
+            y2 = c['path']
+            self.VIEWS['i_pathes'].selection.poses = [(x1, y1), (x2, y2)]
+            self.VIEWS['i_pathes'].selection.s_rows = self.VIEWS['i_pathes'].selection.selected_rows()
+            if self.code_builder.indexes_current_test() != {'path':True, 'func':True}: 
+                return
+            self.VIEWS['t_cur_command'].text.text = self.code_builder.container[c['path']]['d'][c['func']]['func']
+            self.VIEWS['t_cur_command'].text.render()
 
     

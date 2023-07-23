@@ -5,8 +5,6 @@ from xml.etree.ElementTree import Element
 from .imports import *
 from .scroll import ScrollView
 
-from .views.base_view import BaseView
-
 '''
 Контейнеры:
 
@@ -37,7 +35,6 @@ class Parser:
         self.str_xml = str_xml
         self.XML_VIEWS = {}
         self.elements = {}
-        self.el_keys = []
         self.defattrs = {}
 
         self.tag_views = {
@@ -53,10 +50,9 @@ class Parser:
     def parse_element(self, win, el:Element, dx=0, dy=0):
 
         ID = el.attrib.get('id', next())
-        self.el_keys.append(ID)
-
+        
         attrs = el.attrib.copy()
-        if el.tag in ['button', 'text']:
+        if 'coords' in el.attrib.keys():
             pos = eval(attrs.get('coords', '-1'))
         else:
             pos = eval(attrs.get('pos', '-1'))
@@ -83,7 +79,7 @@ class Parser:
         else:
             self.elements[ID] = self.XML_VIEWS[el.tag](**attrs)
         return ID
-        ...
+
 
     # <offset>...</offset>
     def parse_offset(self, win, xml:Element, dx=0, dy=0):
@@ -110,6 +106,8 @@ class Parser:
     def parse_vector(self, win, xml:Element, dx=0, dy=0):
         x = eval(xml.attrib.get('x', '0')) + dx
         y = eval(xml.attrib.get('y', '0')) + dy
+
+        bx, by = x, y
         
         dr = xml.attrib.get('dir', 'h')
         mar = eval(xml.attrib.get('margin', '10'))
@@ -118,15 +116,7 @@ class Parser:
         ID = -1
         for el in xml:
             if el.tag == 'vector':
-
-                if ID in self.elements.keys():
-                # try:
-                    # сдвиг главной оси на размер элемента
-                    w, h = self.elements[ID].getSize()
-                    if dr == 'h': x += w + mar
-                    elif dr == 'v': y += h + mar
-                # except: pass
-
+                
                 ox, oy = self.parse_vector(win, el, x, y)
 
                 # поиск максимума из вложенных vector
@@ -135,6 +125,7 @@ class Parser:
 
                 if dr == 'h': x = ox + mar
                 if dr == 'v': y = oy + mar
+
                 ID = -1
                    
         
@@ -149,39 +140,27 @@ class Parser:
             elif el.tag == 'frozen':
                 self.parse_frozen(win, el, x, y)
             else:
-                if ID != -1:
-                    if ID in self.elements.keys():
-                    # try:
-                        # сдвиг главной оси на размер элемента
-                        w, h = self.elements[ID].getSize()
-                        sx, sy = self.elements[ID].getStart()
-                        if dr == 'h': x = sx + w + mar*2
-                        elif dr == 'v': y = sy + h + mar*2
-                    # except: pass
 
                 ID = self.parse_element(win, el, x, y)
 
+                w, h = self.elements[ID].getSize()
+                sx, sy = self.elements[ID].getStart()
+                if dr == 'h': x = sx + w
+                elif dr == 'v': y = sy + h
+
                 if ID in self.elements.keys():
-                # try:
+                    # поиск максимальных значений
                     w, h = self.elements[ID].getSize()
                     if w > maxes[0]: maxes[0] = w
                     if h > maxes[1]: maxes[1] = h
-                # except: pass
 
                 if dr == 'h': x += mar
                 if dr == 'v': y += mar
 
-        # сдвиг главной оси после генерации всех элементов
-        if ID in self.elements.keys():
-        # try:
-            w, h = self.elements[ID].getSize()
-            if dr == 'h': x += w + mar
-            elif dr == 'v': y += h + mar
-        # except: pass
-
+        
         # сдвиг побочной оси при завершении парсинга vector
-        if dr == 'h': y += maxes[1]
-        elif dr == 'v': x += maxes[0]
+        if dr == 'h': y = by + maxes[1]
+        elif dr == 'v': x = bx + maxes[0]
 
         return [x, y]
     
@@ -201,15 +180,7 @@ class Parser:
 
     def get_design(self, win) -> dict:
 
-        for view in self.XML_VIEWS.values():
-            if not BaseView in view.__bases__:
-                raise Exception(f'{view} должен наследоваться от BaseView (ezzgui.views.base_view.BaseView)')
-
         root = ET.fromstring(self.str_xml)
         self.parse_offset(win, root)
-
-        for view in self.elements.values():
-            view.getStart()
-            view.getSize()
 
         return self.elements
